@@ -1,0 +1,103 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum SubscriptionStatus {
+  free
+  pro
+}
+
+enum LearningPathModuleStatus {
+  not_started
+  in_progress
+  completed
+}
+
+enum ChatRole {
+  user
+  assistant
+}
+
+model User {
+  id                  String             @id @default(cuid())
+  email               String             @unique
+  password_hash       String
+  subscription_status SubscriptionStatus @default(free)
+  created_at          DateTime           @default(now())
+
+  profile       UserProfile?
+  learningPaths LearningPath[]
+  chatMessages  ChatMessage[]
+}
+
+model UserProfile {
+  id              String  @id @default(cuid())
+  userId          String  @unique
+  income_range    String?
+  expenses        Float?
+  debt            Float?
+  savings         Float?
+  age             Int?
+  knowledge_level String?
+  risk_tolerance  String?
+  goals           String?
+  fears           String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Topic {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  modules     Module[]
+}
+
+model Module {
+  id            String                       @id @default(cuid())
+  topicId       String
+  title         String
+  content       String
+  difficulty    String
+  prerequisites String[]
+  embedding     Unsupported("vector(1536)")?
+
+  topic               Topic               @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  learningPathModules LearningPathModule[]
+}
+
+model LearningPath {
+  id         String   @id @default(cuid())
+  userId     String
+  created_at DateTime @default(now())
+
+  user    User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  modules LearningPathModule[]
+}
+
+model LearningPathModule {
+  id                String                   @id @default(cuid())
+  learningPathId    String
+  moduleId          String
+  order             Int
+  status            LearningPathModuleStatus @default(not_started)
+  generated_content String?
+
+  learningPath LearningPath @relation(fields: [learningPathId], references: [id], onDelete: Cascade)
+  module       Module       @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+}
+
+model ChatMessage {
+  id         String   @id @default(cuid())
+  userId     String
+  role       ChatRole
+  content    String
+  created_at DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
