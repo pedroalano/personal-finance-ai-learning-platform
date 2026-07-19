@@ -1,5 +1,7 @@
 # Personal Finance AI Learning Platform
 
+[![CI](https://github.com/pedroalano/personal-finance-ai-learning-platform/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/pedroalano/personal-finance-ai-learning-platform/actions/workflows/ci.yml)
+
 A restricted-access platform that gathers each user's financial profile during onboarding and uses AI to dynamically generate a personalized, progressive learning path through curated personal finance and investing content. A built-in Socratic chat advisor reinforces learning by guiding users to discover answers rather than simply delivering them.
 
 ## Key Features
